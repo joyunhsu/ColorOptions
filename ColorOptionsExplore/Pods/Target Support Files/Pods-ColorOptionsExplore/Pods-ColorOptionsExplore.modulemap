@@ -1,0 +1,6 @@
+framework module Pods_ColorOptionsExplore {
+  umbrella header "Pods-ColorOptionsExplore-umbrella.h"
+
+  export *
+  module * { export * }
+}
