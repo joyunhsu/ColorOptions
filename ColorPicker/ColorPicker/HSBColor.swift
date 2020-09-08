@@ -30,7 +30,7 @@ public class HSBColor: NSObject {
 }
 
 extension HSBColor {
-    convenience init(color: UIColor) {
+    public convenience init(color: UIColor) {
         var hue: CGFloat = 0, saturation: CGFloat = 0, brightness: CGFloat = 0, alpha: CGFloat = 0
         color.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
         self.init(hue: hue, saturation: saturation, brightness: brightness, alpha: alpha)
@@ -40,31 +40,31 @@ extension HSBColor {
     ///
     /// - Returns: `UIColor` equivalent to this `HSBColor`.
     @objc
-    func toUIColor() -> UIColor {
+    public func toUIColor() -> UIColor {
         UIColor(hue: hue, saturation: saturation, brightness: brightness, alpha: alpha)
     }
 
-    func withHue(_ hue: CGFloat) -> HSBColor {
+    public func withHue(_ hue: CGFloat) -> HSBColor {
         HSBColor(hue: hue, saturation: saturation, brightness: brightness)
     }
 
-    func withSaturation(_ saturation: CGFloat) -> HSBColor {
+    public func withSaturation(_ saturation: CGFloat) -> HSBColor {
         HSBColor(hue: hue, saturation: saturation, brightness: brightness)
     }
 
-    func withBrightness(_ brightness: CGFloat) -> HSBColor {
+    public func withBrightness(_ brightness: CGFloat) -> HSBColor {
         HSBColor(hue: hue, saturation: saturation, brightness: brightness)
     }
 
-    func withHue(_ hue: CGFloat, andSaturation saturation: CGFloat) -> HSBColor {
+    public func withHue(_ hue: CGFloat, andSaturation saturation: CGFloat) -> HSBColor {
         HSBColor(hue: hue, saturation: saturation, brightness: brightness)
     }
 
-    func withSaturation(_ saturation: CGFloat, andBrightness brightness: CGFloat) -> HSBColor {
+    public func withSaturation(_ saturation: CGFloat, andBrightness brightness: CGFloat) -> HSBColor {
         HSBColor(hue: hue, saturation: saturation, brightness: brightness)
     }
 
-    func withHue(_ hue: CGFloat, andBrightness brightness: CGFloat) -> HSBColor {
+    public func withHue(_ hue: CGFloat, andBrightness brightness: CGFloat) -> HSBColor {
         HSBColor(hue: hue, saturation: saturation, brightness: brightness)
     }
 }

@@ -30,9 +30,7 @@ public class HSLColor: NSObject {
     }
 
     /**
-    Initializes and creates a HSL (hue, saturation, lightness) color from a DynamicColor object.
-
-    - parameter color: A DynamicColor object.
+    Initializes and creates a HSL (hue, saturation, lightness) color from UIColor.
     */
     public init(color: UIColor) {
       let rgba = color.toRGBAComponents()
@@ -69,13 +67,25 @@ public class HSLColor: NSObject {
       a = rgba.a
     }
 
+    // MARK: - Apply Color Shade
+
+    func lighter(amount: CGFloat) -> HSLColor {
+        return HSLColor(hue: h, saturation: s, lightness: l + amount)
+    }
+
+    func darkened(amount: CGFloat) -> HSLColor {
+        return lighter(amount: amount * -1.0)
+    }
+
+    func saturated(amount: CGFloat) -> HSLColor {
+        return HSLColor(hue: h, saturation: s + amount, lightness: l)
+    }
+
+    func desaturated(amount: CGFloat) -> HSLColor {
+        return saturated(amount: amount * -1.0)
+    }
+
     // MARK: - Transforming HSL Color
-
-    /**
-    Returns the DynamicColor representation from the current HSV color.
-
-    - returns: A DynamicColor object corresponding to the current HSV color.
-    */
     public func toUIColor() -> UIColor {
       let  (r, g, b, a) = rgbaComponents()
 
@@ -116,21 +126,25 @@ public class HSLColor: NSObject {
     }
 }
 
-extension HSLColor {
+extension UIColor {
 
-    func lighter(amount: CGFloat) -> HSLColor {
-        return HSLColor(hue: h, saturation: s, lightness: l + amount)
-    }
+    public convenience init(hue: CGFloat, saturation: CGFloat, lightness: CGFloat, alpha: CGFloat) {
+        precondition(0...1 ~= hue &&
+            0...1 ~= saturation &&
+            0...1 ~= lightness &&
+            0...1 ~= alpha, "input range is out of range 0...1")
 
-    func darkened(amount: CGFloat) -> HSLColor {
-        return lighter(amount: amount * -1.0)
-    }
+        //From HSL TO HSB ---------
+        var newSaturation: CGFloat = 0.0
 
-    func saturated(amount: CGFloat) -> HSLColor {
-        return HSLColor(hue: h, saturation: s + amount, lightness: l)
-    }
+        let brightness = lightness + saturation * min(lightness, 1-lightness)
 
-    func desaturated(amount: CGFloat) -> HSLColor {
-        return saturated(amount: amount * -1.0)
+        if brightness == 0 { newSaturation = 0.0 }
+        else {
+            newSaturation = 2 * (1 - lightness / brightness)
+        }
+        //---------
+
+        self.init(hue: hue, saturation: newSaturation, brightness: brightness, alpha: alpha)
     }
 }
