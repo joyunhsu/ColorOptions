@@ -14,6 +14,7 @@
 		581BCF31250717BF001B5E5C /* HSLColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 581BCF2B250717BE001B5E5C /* HSLColor.swift */; };
 		581BCF32250717BF001B5E5C /* UIImage+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 581BCF2C250717BF001B5E5C /* UIImage+Extension.swift */; };
 		581BCF33250717BF001B5E5C /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 581BCF2D250717BF001B5E5C /* UIColor+Extension.swift */; };
+		5850149D250764680039DF6F /* GradientSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5850149C250764680039DF6F /* GradientSlider.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,9 @@
 		581BCF2B250717BE001B5E5C /* HSLColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HSLColor.swift; sourceTree = "<group>"; };
 		581BCF2C250717BF001B5E5C /* UIImage+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+Extension.swift"; sourceTree = "<group>"; };
 		581BCF2D250717BF001B5E5C /* UIColor+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
+		5850149C250764680039DF6F /* GradientSlider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GradientSlider.swift; sourceTree = "<group>"; };
+		5850149F250765560039DF6F /* SnapKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SnapKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		585014A3250765B70039DF6F /* SnapKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SnapKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,6 +48,7 @@
 			children = (
 				581BCF1F250717B2001B5E5C /* ColorPicker */,
 				581BCF1E250717B2001B5E5C /* Products */,
+				5850149E250765560039DF6F /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -64,10 +69,20 @@
 				581BCF2B250717BE001B5E5C /* HSLColor.swift */,
 				581BCF2D250717BF001B5E5C /* UIColor+Extension.swift */,
 				581BCF2C250717BF001B5E5C /* UIImage+Extension.swift */,
+				5850149C250764680039DF6F /* GradientSlider.swift */,
 				581BCF20250717B2001B5E5C /* ColorPicker.h */,
 				581BCF21250717B2001B5E5C /* Info.plist */,
 			);
 			path = ColorPicker;
+			sourceTree = "<group>";
+		};
+		5850149E250765560039DF6F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				585014A3250765B70039DF6F /* SnapKit.framework */,
+				5850149F250765560039DF6F /* SnapKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -156,6 +171,7 @@
 				581BCF33250717BF001B5E5C /* UIColor+Extension.swift in Sources */,
 				581BCF2E250717BF001B5E5C /* ColorManager.swift in Sources */,
 				581BCF31250717BF001B5E5C /* HSLColor.swift in Sources */,
+				5850149D250764680039DF6F /* GradientSlider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

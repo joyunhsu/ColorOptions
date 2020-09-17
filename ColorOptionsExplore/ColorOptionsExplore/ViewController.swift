@@ -27,6 +27,7 @@ class PixelPickerControl: UIControl {
     }()
 
     private let cursor = UIImageView(image: UIImage(named: "img_oval"))
+    private let colorCursor = ColorPreviewCursor()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -71,25 +72,178 @@ class PixelPickerControl: UIControl {
         guard let color = resizedImage?.getPixelColor(at: point) else { return }
         selectedColor = color
         sendActions(for: .valueChanged)
+        colorCursor.selectedColor = color
     }
 
     private func updateCursorPosition(at point: CGPoint) {
-        cursor.frame = CGRect(origin: CGPoint(x: point.x - 15, y: point.y - 15), size: CGSize(width: 30, height: 30))
+        colorCursor.frame = CGRect(
+            origin: CGPoint(
+                x: point.x - ColorPreviewCursor.sideWidth / 2,
+                y: point.y - ColorPreviewCursor.sideWidth / 2
+            ),
+            size: CGSize(
+                width: ColorPreviewCursor.sideWidth,
+                height: ColorPreviewCursor.sideWidth
+            )
+        )
     }
 
     private func setup() {
         addSubview(imageView)
-        addSubview(cursor)
+        addSubview(colorCursor)
 
         imageView.snp.makeConstraints { (make) in
             make.edges.equalToSuperview()
         }
 
+        colorCursor.snp.makeConstraints { (make) in
+            make.center.equalToSuperview()
+            make.width.height.equalTo(ColorPreviewCursor.sideWidth)
+        }
+
+//        colorCursor.backgroundColor = .white
+//        colorCursor.layer.borderColor = UIColor.blue.cgColor
+//        colorCursor.layer.borderWidth = 3
+//        colorCursor.addShadowWithOffset()
+    }
+}
+
+class ColorPreviewCursor: UIView {
+
+    var selectedColor: UIColor = .white {
+        didSet {
+            setNeedsLayout()
+        }
+    }
+
+    private let cursor = UIImageView(image: UIImage(named: "img_oval"))
+    static let sideWidth: CGFloat = 130
+    let edgeInset: CGFloat = 3
+    static var layerCenter: CGPoint {
+        CGPoint(x: sideWidth / 2, y: sideWidth / 2)
+    }
+
+    let circleLayer = CAShapeLayer()
+    let magnifyingView = UIImageView()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setup()
+        backgroundColor = .clear
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func draw(_ rect: CGRect) {
+        super.draw(rect)
+//        let circleSize = CGRect(x: rect.minX, y: rect.minY, width: ColorPreviewCursor.sideWidth, height: ColorPreviewCursor.sideWidth)
+//        let insetSize = circleSize.insetBy(dx: 1.5, dy: 1.5)
+//        let innerCircleWidth: CGFloat = 40
+//        let circlePath = UIBezierPath(ovalIn: insetSize)
+//        let innerCirclePath = UIBezierPath(
+//            ovalIn: CGRect(
+//                x: rect.minX + (80 - innerCircleWidth) / 2,
+//                y: rect.minY + (80 - innerCircleWidth) / 2,
+//                width: innerCircleWidth,
+//                height: innerCircleWidth
+//            )
+//        )
+//        circlePath.append(innerCirclePath)
+//        circlePath.usesEvenOddFillRule = true
+//        circlePath.lineWidth = 3
+//        selectedColor.setFill()
+//        UIColor.white.setStroke()
+//        circlePath.fill()
+//        circlePath.stroke()
+
+        let outerCircleSize = CGRect(x: rect.minX, y: rect.minY, width: ColorPreviewCursor.sideWidth, height: ColorPreviewCursor.sideWidth)
+        let outerCirclePath = UIBezierPath(ovalIn: outerCircleSize)
+        UIColor.black.setFill()
+        outerCirclePath.fill()
+    }
+
+    private func setup() {
+        addSubview(cursor)
         cursor.snp.makeConstraints { (make) in
             make.center.equalToSuperview()
             make.width.height.equalTo(30)
         }
     }
+
+    override func didMoveToSuperview() {
+        super.didMoveToSuperview()
+        layer.addSublayer(circleLayer)
+    }
+
+    private func createDonutPath() -> UIBezierPath {
+        let frame = CGRect(x: bounds.minX, y: bounds.minY, width: ColorPreviewCursor.sideWidth, height: ColorPreviewCursor.sideWidth).insetBy(dx: edgeInset, dy: edgeInset)
+        let path = UIBezierPath(ovalIn: frame)
+        return path
+
+        /// from PaintCode
+//        let bezierPath = UIBezierPath()
+//        bezierPath.move(to: CGPoint(x: frame.minX + 75, y: frame.minY + 30))
+//        bezierPath.addCurve(to: CGPoint(x: frame.minX + 54.79, y: frame.minY + 34.78), controlPoint1: CGPoint(x: frame.minX + 67.73, y: frame.minY + 30), controlPoint2: CGPoint(x: frame.minX + 60.87, y: frame.minY + 31.72))
+//        bezierPath.addCurve(to: CGPoint(x: frame.minX + 30, y: frame.minY + 75), controlPoint1: CGPoint(x: frame.minX + 40.09, y: frame.minY + 42.18), controlPoint2: CGPoint(x: frame.minX + 30, y: frame.minY + 57.41))
+//        bezierPath.addCurve(to: CGPoint(x: frame.minX + 75, y: frame.minY + 120), controlPoint1: CGPoint(x: frame.minX + 30, y: frame.minY + 99.85), controlPoint2: CGPoint(x: frame.minX + 50.15, y: frame.minY + 120))
+//        bezierPath.addCurve(to: CGPoint(x: frame.minX + 120, y: frame.minY + 75), controlPoint1: CGPoint(x: frame.minX + 99.85, y: frame.minY + 120), controlPoint2: CGPoint(x: frame.minX + 120, y: frame.minY + 99.85))
+//        bezierPath.addCurve(to: CGPoint(x: frame.minX + 75, y: frame.minY + 30), controlPoint1: CGPoint(x: frame.minX + 120, y: frame.minY + 50.15), controlPoint2: CGPoint(x: frame.minX + 99.85, y: frame.minY + 30))
+//        bezierPath.close()
+//        bezierPath.move(to: CGPoint(x: frame.minX + 150, y: frame.minY + 75))
+//        bezierPath.addCurve(to: CGPoint(x: frame.minX + 75, y: frame.minY + 150), controlPoint1: CGPoint(x: frame.minX + 150, y: frame.minY + 116.42), controlPoint2: CGPoint(x: frame.minX + 116.42, y: frame.minY + 150))
+//        bezierPath.addCurve(to: CGPoint(x: frame.minX, y: frame.minY + 75), controlPoint1: CGPoint(x: frame.minX + 33.58, y: frame.minY + 150), controlPoint2: CGPoint(x: frame.minX, y: frame.minY + 116.42))
+//        bezierPath.addCurve(to: CGPoint(x: frame.minX + 29.84, y: frame.minY + 15.11), controlPoint1: CGPoint(x: frame.minX, y: frame.minY + 50.53), controlPoint2: CGPoint(x: frame.minX + 11.71, y: frame.minY + 28.8))
+//        bezierPath.addCurve(to: CGPoint(x: frame.minX + 75, y: frame.minY), controlPoint1: CGPoint(x: frame.minX + 42.4, y: frame.minY + 5.63), controlPoint2: CGPoint(x: frame.minX + 58.04, y: frame.minY))
+//        bezierPath.addCurve(to: CGPoint(x: frame.minX + 150, y: frame.minY + 75), controlPoint1: CGPoint(x: frame.minX + 116.42, y: frame.minY), controlPoint2: CGPoint(x: frame.minX + 150, y: frame.minY + 33.58))
+//        bezierPath.close()
+//        UIColor.gray.setFill()
+//        bezierPath.fill()
+//        return bezierPath
+    }
+
+    private func createCircleColorPreview() -> UIView {
+        let cursorView = UIView()
+        let cursorLayer = CAShapeLayer()
+
+//        let aDegree = CGFloat.pi / 180
+//        let circularPath = UIBezierPath(arcCenter: ColorPreviewCursor.layerCenter, radius: ColorPreviewCursor.sideWidth / 2, startAngle: -aDegree * 90, endAngle: aDegree * 270, clockwise: true)
+
+        let circularPath = UIBezierPath(
+            ovalIn: CGRect(
+                x: ColorPreviewCursor.layerCenter.x - ColorPreviewCursor.sideWidth / 2,
+                y: ColorPreviewCursor.layerCenter.y - ColorPreviewCursor.sideWidth / 2,
+                width: 80,
+                height: 80)
+        )
+        let innerCirclePath = UIBezierPath(
+            ovalIn: CGRect(
+                x: ColorPreviewCursor.layerCenter.x - 50 / 2,
+                y: ColorPreviewCursor.layerCenter.y - 50 / 2,
+                width: 50,
+                height: 50)
+        )
+        circularPath.append(innerCirclePath)
+        circularPath.usesEvenOddFillRule = true
+
+        cursorLayer.path = circularPath.cgPath
+        cursorLayer.strokeColor = selectedColor.cgColor
+        cursorLayer.lineWidth = 3
+        cursorLayer.fillColor = UIColor.blue.withAlphaComponent(0.3).cgColor
+        cursorView.layer.addSublayer(cursorLayer)
+        cursorView.addShadowWithOffset()
+        cursorView.backgroundColor = UIColor.yellow.withAlphaComponent(0.3)
+        return cursorView
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        let donutPath = createDonutPath()
+        circleLayer.path = donutPath.cgPath
+        circleLayer.fillColor = selectedColor.cgColor
+    }
+
 }
 
 class ViewController: UIViewController {
