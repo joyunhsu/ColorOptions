@@ -15,7 +15,7 @@ class PixelPickerControl: UIControl {
     var selectedPoint: CGPoint = CGPoint(x: 150, y: 150)
 
     let imageView: UIImageView = {
-        let imageView = UIImageView(image: UIImage(named: "sample"))
+        let imageView = UIImageView(image: UIImage(named: "sample5"))
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         return imageView
@@ -36,6 +36,16 @@ class PixelPickerControl: UIControl {
         let croppedImage = cropToBounds(image: resizedImage!, width: 50, height: 50, position: CGPoint(x: 150, y: 150))
         return croppedImage
     }()
+
+    init(colorCursor: ColorCursor = CircularPreviewCursor()) {
+        self.colorCursor = colorCursor
+        super.init(frame: .zero)
+        setup()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     func cropToBounds(image: UIImage, width: CGFloat, height: CGFloat, position: CGPoint) -> UIImage {
 
@@ -86,16 +96,6 @@ class PixelPickerControl: UIControl {
     }
 
     private var colorCursor: ColorCursor
-
-    init(colorCursor: ColorCursor = CircularPreviewCursor()) {
-        self.colorCursor = colorCursor
-        super.init(frame: .zero)
-        setup()
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let location = touches.first?.location(in: self) else { return }
@@ -184,33 +184,65 @@ protocol ColorCursor: UIView {
 
 class DropletPreviewCursor: UIView, ColorCursor {
 
-    init(selectedColor: UIColor, selectedImage: UIImage) {
+    init(selectedColor: UIColor = .white, selectedImage: UIImage = UIImage(named: "sample")!) {
         self.selectedImage = selectedImage
         self.selectedColor = selectedColor
         super.init(frame: .zero)
+        backgroundColor = .clear
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    var selectedImage: UIImage
+    var selectedImage: UIImage {
+        didSet {
+            setNeedsLayout()
+        }
+    }
 
-    var selectedColor: UIColor
+    var selectedColor: UIColor {
+        didSet {
+            setNeedsLayout()
+        }
+    }
 
     private let shapeLayer = CAShapeLayer()
+    private let indicatorLayer = CAShapeLayer()
+    private var dropletPath = UIBezierPath()
 
     override func draw(_ rect: CGRect) {
         super.draw(rect)
+        dropletPath = createPreviewPath()
+        shapeLayer.path = dropletPath.cgPath
+        shapeLayer.fillColor = selectedColor.cgColor
+        shapeLayer.strokeColor = UIColor.white.cgColor
+        shapeLayer.lineWidth = 2
+
+        let ovalPath = UIBezierPath(
+            ovalIn: CGRect(x: bounds.midX - 5, y: bounds.midY, width: 10, height: 10)
+        )
+        indicatorLayer.path = ovalPath.cgPath
+        indicatorLayer.lineWidth = 2
+        indicatorLayer.strokeColor = UIColor.white.cgColor
+        indicatorLayer.fillColor = UIColor.clear.cgColor
     }
 
     override func didMoveToSuperview() {
         super.didMoveToSuperview()
+        layer.addSublayer(shapeLayer)
+        layer.addSublayer(indicatorLayer)
     }
 
     func createPreviewPath() -> UIBezierPath {
         let dropletPath = UIBezierPath()
-        let rect: CGRect = CGRect(x: 0, y: 0, width: 80, height: 80)
+        let rect: CGRect = CGRect(
+            x: bounds.midX - 80 / 2,
+            y: bounds.minY - 40,
+            width: 80,
+            height: 80
+        )
+
         dropletPath.move(to: CGPoint(x: rect.minX + 40, y: rect.minY + 78))
         dropletPath.addCurve(to: CGPoint(x: rect.minX + 61.88, y: rect.minY + 60.08), controlPoint1: CGPoint(x: rect.minX + 49.04, y: rect.minY + 73.12), controlPoint2: CGPoint(x: rect.minX + 56.34, y: rect.minY + 67.15))
         dropletPath.addCurve(to: CGPoint(x: rect.minX + 72, y: rect.minY + 34.85), controlPoint1: CGPoint(x: rect.minX + 67.26, y: rect.minY + 53.22), controlPoint2: CGPoint(x: rect.minX + 72, y: rect.minY + 44.01))
@@ -221,6 +253,11 @@ class DropletPreviewCursor: UIView, ColorCursor {
         dropletPath.close()
         dropletPath.usesEvenOddFillRule = true
         return dropletPath
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        shapeLayer.fillColor = selectedColor.cgColor
     }
 }
 
@@ -266,7 +303,7 @@ class CircularPreviewCursor: UIView, ColorCursor {
 
         colorOvalPath = createPreviewPath()
         shapeLayer.path = colorOvalPath.cgPath
-        shapeLayer.fillColor = UIColor.white.cgColor
+        shapeLayer.fillColor = selectedColor.cgColor
 
         let outerCircleSize = CGRect(x: rect.minX, y: rect.minY, width: CircularPreviewCursor.sideWidth, height: CircularPreviewCursor.sideWidth)
         let outerCirclePath = UIBezierPath(ovalIn: outerCircleSize)
